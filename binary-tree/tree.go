@@ -1,17 +1,12 @@
 package binary_tree
 
 type Tree struct {
-	root    *node
-	size    int
-	maxDeep int
+	root *node
+	size int
 }
 
 func (t *Tree) Size() int {
 	return t.size
-}
-
-func (t *Tree) MaxDeep() int {
-	return t.maxDeep
 }
 
 func (t *Tree) Search(key int) interface{} {
@@ -24,7 +19,7 @@ func (t *Tree) Search(key int) interface{} {
 	}
 }
 
-func (t *Tree) Add(key int, value interface{}) {
+func (t *Tree) Insert(key int, value interface{}) {
 	t.size++
 	if t.root == nil {
 		t.root = t.newNode(key, value, nil)
@@ -57,11 +52,12 @@ func (t *Tree) Remove(key int) interface{} {
 
 	} else {
 		if n.left != nil {
+			n.left.parent = nil
 			t.root = n.left
 		}
 
 		if n.right != nil {
-			insertTree(t.root.right, n.right)
+			insertTree(t.root, n.right)
 		}
 	}
 
@@ -94,9 +90,6 @@ func (t *Tree) insert(key int, value interface{}, n *node) {
 
 func (t *Tree) newNode(key int, value interface{}, parent *node) *node {
 	n := newNode(key, value, parent)
-	if n.deep > t.maxDeep {
-		t.maxDeep = n.deep
-	}
 
 	return n
 }

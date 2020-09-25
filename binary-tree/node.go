@@ -11,6 +11,7 @@ type node struct {
 	left   *node
 	right  *node
 	parent *node
+	height int
 	deep   int
 }
 
@@ -26,6 +27,7 @@ func newNode(key int, value interface{}, parent *node) *node {
 	return &node{
 		key:    key,
 		value:  value,
+		height: 1,
 		left:   nil,
 		right:  nil,
 		parent: parent,
@@ -51,6 +53,8 @@ func (n *node) String(t string) string {
 func (n *node) updateDeep() {
 	if n.parent != nil {
 		n.deep = n.parent.deep + 1
+	} else {
+		n.deep = 1
 	}
 
 	if n.left != nil {

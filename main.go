@@ -7,18 +7,18 @@ import (
 	"time"
 )
 
-var test = []int{50, 17, 76, 9, 23, 14, 12, 19, 54, 72, 67}
+//var keys = []int{50, 17, 76, 9, 23, 14, 12, 19, 54, 72, 67}
 
 func main() {
 	tree := binaryTree.Tree{}
 
-	//keys := genUniqRandom(1, 100)
+	keys := genUniqRandom(1, 50)
 
-	for _, v := range test {
-		tree.Add(v, v)
+	for _, v := range keys {
+		tree.Insert(v, v)
 	}
 
-	//for _, v := range test {
+	//for _, v := range keys {
 	//	value := tree.Search(v)
 	//
 	//	if  value != v {
@@ -27,10 +27,11 @@ func main() {
 	//	fmt.Println("key", v, "value", value)
 	//}
 
-	fmt.Println("size", tree.Size(), "deep", tree.MaxDeep())
+	fmt.Println("size", tree.Size(), "maxDeep")
 	fmt.Println(tree.String())
-	removed := tree.Remove(17)
-	fmt.Println(removed, tree.Size())
+	removed := tree.Remove(50)
+	fmt.Println("removed: ", removed)
+	fmt.Println("size: ", tree.Size(), "maxDeep")
 	fmt.Println(tree.String())
 
 }

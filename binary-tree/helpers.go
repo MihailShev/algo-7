@@ -8,7 +8,10 @@ import (
 func treeToString(t *Tree) string {
 	arr := make([]*node, 0)
 	nodeToArray(t.root, &arr)
+
+	t.root.updateDeep()
 	sort.Sort(NodesByDeep(arr))
+
 	s := &strings.Builder{}
 
 	for _, v := range arr {
@@ -56,25 +59,5 @@ func search(key int, n *node) *node {
 		return search(key, n.right)
 	} else {
 		return search(key, n.left)
-	}
-}
-
-func insertTree(parent *node, child *node) {
-	if child.key > parent.key {
-		if parent.right != nil {
-			insertTree(parent.right, child)
-		} else {
-			parent.right = child
-			child.parent = parent
-			child.updateDeep()
-		}
-	} else {
-		if parent.left != nil {
-			insertTree(parent.left, child)
-		} else {
-			parent.left = child
-			child.parent = parent
-			child.updateDeep()
-		}
 	}
 }
