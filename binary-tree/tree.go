@@ -1,11 +1,5 @@
 package binary_tree
 
-import (
-	"fmt"
-	"sort"
-	"strings"
-)
-
 type Tree struct {
 	root    *node
 	size    int
@@ -77,86 +71,7 @@ func (t *Tree) Remove(key int) interface{} {
 }
 
 func (t *Tree) String() string {
-	arr := make([]*node, 0)
-	some(t.root, &arr)
-	sort.Sort(NodesByDeep(arr))
-	s := &strings.Builder{}
-
-	for _, v := range arr {
-		t := ""
-		if v.parent != nil {
-
-			if v.key < v.parent.key {
-				t = "left"
-			} else {
-				t = "right"
-			}
-		}
-		s.WriteString(v.String(t))
-		s.WriteString("\n")
-	}
-
-	return s.String()
-}
-
-func some(n *node, arr *[]*node) {
-	if n != nil {
-		*arr = append(*arr, n)
-
-		if n.left != nil {
-			some(n.left, arr)
-		}
-
-		if n.right != nil {
-			some(n.right, arr)
-		}
-	}
-}
-
-func toString(n *node, t string, s *strings.Builder) {
-	if n != nil {
-
-		mes := fmt.Sprintf("deep %d ", n.deep)
-
-		s.WriteString(mes)
-
-		if n.parent != nil {
-			mes = fmt.Sprintf("parent: %d ", n.parent.key)
-			s.WriteString(mes)
-		}
-
-		mes = fmt.Sprintf("%s key: %d\n", t, n.key)
-
-		s.WriteString(mes)
-
-		if n.left != nil {
-			toString(n.left, "left", s)
-		}
-
-		if n.right != nil {
-			toString(n.right, "right", s)
-		}
-
-	}
-
-	return
-}
-
-func search(key int, n *node) *node {
-
-	if n == nil {
-		return nil
-	}
-
-	if key == n.key {
-		return n
-	}
-
-	if key > n.key {
-		return search(key, n.right)
-	} else {
-		return search(key, n.left)
-	}
+	return treeToString(t)
 }
 
 func (t *Tree) insert(key int, value interface{}, n *node) {
@@ -173,26 +88,6 @@ func (t *Tree) insert(key int, value interface{}, n *node) {
 			t.insert(key, value, n.left)
 		} else {
 			n.left = t.newNode(key, value, n)
-		}
-	}
-}
-
-func insertTree(parent *node, child *node) {
-	if child.key > parent.key {
-		if parent.right != nil {
-			insertTree(parent.right, child)
-		} else {
-			parent.right = child
-			child.parent = parent
-			child.deep = parent.deep + 1
-		}
-	} else {
-		if parent.left != nil {
-			insertTree(parent.left, child)
-		} else {
-			parent.left = child
-			child.parent = parent
-			child.deep = parent.deep + 1
 		}
 	}
 }

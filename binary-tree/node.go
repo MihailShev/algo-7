@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-type NodesByDeep []*node
-
 type node struct {
 	key    int
 	value  interface{}
@@ -38,30 +36,28 @@ func newNode(key int, value interface{}, parent *node) *node {
 func (n *node) String(t string) string {
 	s := strings.Builder{}
 
-	mes := fmt.Sprintf("deep %d ", n.deep)
-
-	s.WriteString(mes)
+	s.WriteString(fmt.Sprintf("deep %d\t ", n.deep))
+	s.WriteString(fmt.Sprintf("%s \t%d \t", t, n.key))
 
 	if n.parent != nil {
-		mes = fmt.Sprintf("parent: %d ", n.parent.key)
-		s.WriteString(mes)
+		s.WriteString(fmt.Sprintf("parent: %d ", n.parent.key))
+	} else {
+		s.WriteString("null    ")
 	}
-
-	mes = fmt.Sprintf("%s key: %d", t, n.key)
-
-	s.WriteString(mes)
 
 	return s.String()
 }
 
-func (n NodesByDeep) Len() int {
-	return len(n)
-}
+func (n *node) updateDeep() {
+	if n.parent != nil {
+		n.deep = n.parent.deep + 1
+	}
 
-func (n NodesByDeep) Less(i, j int) bool {
-	return n[i].deep < n[j].deep
-}
+	if n.left != nil {
+		n.left.updateDeep()
+	}
 
-func (n NodesByDeep) Swap(i, j int) {
-	n[i], n[j] = n[j], n[i]
+	if n.right != nil {
+		n.right.updateDeep()
+	}
 }
