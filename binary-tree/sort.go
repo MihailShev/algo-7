@@ -13,3 +13,17 @@ func (n NodesByDeep) Less(i, j int) bool {
 func (n NodesByDeep) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
+
+func nodeToArray(n *node, arr *[]*node) {
+	if n != nil {
+		*arr = append(*arr, n)
+
+		if n.left != nil {
+			nodeToArray(n.left, arr)
+		}
+
+		if n.right != nil {
+			nodeToArray(n.right, arr)
+		}
+	}
+}

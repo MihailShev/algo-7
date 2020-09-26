@@ -5,11 +5,11 @@ import (
 	"strings"
 )
 
-func treeToString(t *Tree) string {
+func treeToString(root *node, showHeight bool) string {
 	arr := make([]*node, 0)
-	nodeToArray(t.root, &arr)
+	nodeToArray(root, &arr)
 
-	t.root.updateDeep()
+	root.updateDeep()
 	sort.Sort(NodesByDeep(arr))
 
 	s := &strings.Builder{}
@@ -24,25 +24,11 @@ func treeToString(t *Tree) string {
 				t = "right"
 			}
 		}
-		s.WriteString(v.String(t))
+		s.WriteString(v.String(t, showHeight))
 		s.WriteString("\n")
 	}
 
 	return s.String()
-}
-
-func nodeToArray(n *node, arr *[]*node) {
-	if n != nil {
-		*arr = append(*arr, n)
-
-		if n.left != nil {
-			nodeToArray(n.left, arr)
-		}
-
-		if n.right != nil {
-			nodeToArray(n.right, arr)
-		}
-	}
 }
 
 func search(key int, n *node) *node {
@@ -60,4 +46,12 @@ func search(key int, n *node) *node {
 	} else {
 		return search(key, n.left)
 	}
+}
+
+func safeGetNodeHeight(n *node) int {
+	if n != nil {
+		return n.height
+	}
+
+	return 0
 }

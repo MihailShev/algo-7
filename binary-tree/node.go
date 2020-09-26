@@ -35,10 +35,15 @@ func newNode(key int, value interface{}, parent *node) *node {
 	}
 }
 
-func (n *node) String(t string) string {
+func (n *node) String(t string, showHeight bool) string {
 	s := strings.Builder{}
 
 	s.WriteString(fmt.Sprintf("deep %d\t ", n.deep))
+
+	if showHeight {
+		s.WriteString(fmt.Sprintf("height %d\t ", n.height))
+	}
+
 	s.WriteString(fmt.Sprintf("%s \t%d \t", t, n.key))
 
 	if n.parent != nil {

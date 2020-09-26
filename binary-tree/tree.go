@@ -24,7 +24,7 @@ func (t *Tree) Insert(key int, value interface{}) {
 	if t.root == nil {
 		t.root = t.newNode(key, value, nil)
 	} else {
-		t.insert(key, value, t.root)
+		insert(key, value, t.root)
 	}
 }
 
@@ -67,26 +67,26 @@ func (t *Tree) Remove(key int) interface{} {
 }
 
 func (t *Tree) String() string {
-	return treeToString(t)
+	return treeToString(t.root, false)
 }
 
-func (t *Tree) insert(key int, value interface{}, n *node) {
-	if key == n.key {
-		n.value = value
-	} else if key > n.key {
-		if n.right != nil {
-			t.insert(key, value, n.right)
-		} else {
-			n.right = t.newNode(key, value, n)
-		}
-	} else {
-		if n.left != nil {
-			t.insert(key, value, n.left)
-		} else {
-			n.left = t.newNode(key, value, n)
-		}
-	}
-}
+//func (t *Tree) insert(key int, value interface{}, n *node) {
+//	if key == n.key {
+//		n.value = value
+//	} else if key > n.key {
+//		if n.right != nil {
+//			t.insert(key, value, n.right)
+//		} else {
+//			n.right = t.newNode(key, value, n)
+//		}
+//	} else {
+//		if n.left != nil {
+//			t.insert(key, value, n.left)
+//		} else {
+//			n.left = t.newNode(key, value, n)
+//		}
+//	}
+//}
 
 func (t *Tree) newNode(key int, value interface{}, parent *node) *node {
 	n := newNode(key, value, parent)
