@@ -6,6 +6,9 @@ import (
 )
 
 func treeToString(root *node, showHeight bool) string {
+	if root == nil {
+		return "Tree is empty"
+	}
 	arr := make([]*node, 0)
 	nodeToArray(root, &arr)
 

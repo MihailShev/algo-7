@@ -34,61 +34,112 @@ func (avl *AVL) Search(key int) interface{} {
 }
 
 func (avl *AVL) Remove(key int) interface{} {
-	n := search(key, avl.root)
+	nodeToRemove := search(key, avl.root)
 
-	if n == nil {
+	if nodeToRemove == nil {
 		return nil
 	}
 
 	avl.size--
 
-	if n.left != nil || n.right != nil {
-		var tmp *node
+	// Находим и вырезаем из текущей позиции ноду, которая должна заменить удаляемую
+	nodeToReplace := findAndCutNodeToReplace(nodeToRemove, avl)
 
-		tmp = findMax(n.left)
-
-		if tmp != n.left {
-			tmp.parent.right = nil
-		} else {
-			tmp.parent.left = nil
-		}
-
-		tmp.parent = n.parent
-
-		if tmp.parent == nil {
-			avl.root = tmp
-		} else {
-			if tmp.parent.left == n {
-				tmp.parent.left = tmp
+	// Если нода для замены не найдена, значит у удаляемой ноды нет потомков
+	// и можно просто стереть ссылку на нее у родителя
+	if nodeToReplace == nil {
+		// Если удаляемая нода не имеет потомков, то удаляем ссылки на нее у ее родителя
+		if nodeToRemove.parent != nil {
+			if nodeToRemove.parent.left == nodeToRemove {
+				nodeToRemove.parent.left = nil
 			} else {
-				tmp.parent.right = tmp
+				nodeToRemove.parent.right = nil
+			}
+			balance(nodeToRemove.parent, avl)
+		} else {
+			avl.root = nil
+		}
+	} else {
+		replaceNodeToRemove(nodeToRemove, nodeToReplace, avl)
+		balance(nodeToReplace, avl)
+	}
+
+	return nodeToRemove
+}
+
+func replaceNodeToRemove(nodeToRemove, nodeToReplace *node, avl *AVL) {
+	// Заменяем ссылку на родителя у nodeToReplace
+	nodeToReplace.parent = nodeToRemove.parent
+
+	if nodeToReplace.parent == nil {
+		avl.root = nodeToReplace
+	} else {
+		// Если удаляемая нода была у родителя слева, то вставляем nodeToReplace слева
+		if nodeToReplace.parent.left == nodeToRemove {
+			nodeToReplace.parent.left = nodeToReplace
+		} else {
+			// Если удаляемая нода была у родителя справа, то вставляем nodeToReplace справа
+			nodeToReplace.parent.right = nodeToReplace
+		}
+	}
+
+	nodeToReplace.left = nodeToRemove.left
+	nodeToReplace.right = nodeToRemove.right
+
+	if nodeToReplace.left != nil {
+		nodeToReplace.left.parent = nodeToReplace
+	}
+
+	if nodeToReplace.right != nil {
+		nodeToReplace.right.parent = nodeToReplace
+	}
+}
+
+// Поиск ноды, которая будет помещена на место удаленной
+func findAndCutNodeToReplace(nodeToRemove *node, avl *AVL) *node {
+	var nodeToReplace *node
+
+	if nodeToRemove.left != nil {
+		// Если у nodeToRemove есть потомки слева, то ищем ноду с максимальным значением ключа слева
+		nodeToReplace = findMax(nodeToRemove.left)
+
+		// Если nodeToReplace не прямой потомок nodeToRemove, то удаляем ссылку на nodeToReplace у родителя nodeToReplace
+		if nodeToReplace != nodeToRemove.left {
+			nodeToReplace.parent.right = nodeToReplace.left
+			if nodeToReplace.parent.right != nil {
+				nodeToReplace.parent.right.parent = nodeToReplace.parent
+			}
+			balance(nodeToReplace.parent, avl)
+		} else {
+			// Если nodeToReplace прямой потомок nodeToRemove, то удаляем у nodeToRemove ссылку на nodeToReplace
+			nodeToReplace.parent.left = nodeToReplace.left
+			if nodeToReplace.parent.left != nil {
+				nodeToReplace.parent.left.parent = nodeToReplace.parent
 			}
 		}
 
-		tmp.left = n.left
-		tmp.right = n.right
+	} else if nodeToRemove.right != nil {
+		// Если у nodeToRemove есть потомки справа, то ищем ноду с максимальным значением ключа справа
+		nodeToReplace = findMin(nodeToRemove.right)
 
-		if tmp.left != nil {
-			tmp.left.parent = tmp
-		}
-
-		if tmp.right != nil {
-			tmp.right.parent = tmp
-		}
-
-		balance(tmp, avl)
-
-	} else {
-		if n.parent.left == n {
-			n.parent.left = nil
+		// Если nodeToReplace не прямой потомок nodeToRemove, то удаляем ссылку на nodeToReplace у родителя nodeToReplace
+		if nodeToReplace != nodeToRemove.right {
+			nodeToReplace.parent.left = nodeToReplace.right
+			if nodeToReplace.parent.left != nil {
+				nodeToReplace.parent.left.parent = nodeToReplace.parent
+			}
+			//nodeToReplace.parent.left.parent = nodeToReplace.parent
+			balance(nodeToReplace.parent, avl)
 		} else {
-			n.parent.right = nil
+			// Если nodeToReplace прямой потомок nodeToRemove, то удаляем ссылку у nodeToRemove на nodeToReplace
+			nodeToReplace.parent.right = nodeToReplace.right
+			if nodeToReplace.right != nil {
+				nodeToReplace.parent.right.parent = nodeToReplace.parent
+			}
 		}
-
-		balance(n.parent, avl)
 	}
 
-	return n
+	return nodeToReplace
 }
 
 func findMin(n *node) *node {
@@ -109,4 +160,31 @@ func findMax(n *node) *node {
 
 func (avl *AVL) String() string {
 	return treeToString(avl.root, true)
+}
+
+func (avl *AVL) IsBalanced() bool {
+	return isBalanced(avl.root)
+}
+
+func isBalanced(n *node) bool {
+	if n != nil {
+
+		l := safeGetNodeHeight(n.left)
+		r := safeGetNodeHeight(n.right)
+
+		if l > r && l-r > 1 {
+			return false
+		}
+
+		if l < r && r-l > 1 {
+			return false
+		}
+
+		if !isBalanced(n.left) || !isBalanced(n.right) {
+			return false
+		}
+
+	}
+
+	return true
 }
