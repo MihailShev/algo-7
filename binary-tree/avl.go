@@ -128,7 +128,6 @@ func findAndCutNodeToReplace(nodeToRemove *node, avl *AVL) *node {
 			if nodeToReplace.parent.left != nil {
 				nodeToReplace.parent.left.parent = nodeToReplace.parent
 			}
-			//nodeToReplace.parent.left.parent = nodeToReplace.parent
 			balance(nodeToReplace.parent, avl)
 		} else {
 			// Если nodeToReplace прямой потомок nodeToRemove, то удаляем ссылку у nodeToRemove на nodeToReplace
@@ -180,10 +179,7 @@ func isBalanced(n *node) bool {
 			return false
 		}
 
-		if !isBalanced(n.left) || !isBalanced(n.right) {
-			return false
-		}
-
+		return !isBalanced(n.left) || isBalanced(n.right)
 	}
 
 	return true

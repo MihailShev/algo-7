@@ -15,7 +15,7 @@ import (
 func main() {
 	tree := binaryTree.AVL{}
 
-	keys := genUniqRandom(1, 200)
+	keys := genUniqRandom(1, 2000)
 	fmt.Println(keys)
 	start := time.Now()
 	for _, v := range keys {
