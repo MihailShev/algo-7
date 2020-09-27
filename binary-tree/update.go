@@ -7,24 +7,28 @@ const (
 )
 
 func insert(key int, value interface{}, parent *node) *node {
+	var res *node
+
 	if key == parent.key {
 		parent.value = value
-		return parent
+		res = parent
 	} else if key > parent.key {
 		if parent.right != nil {
-			return insert(key, value, parent.right)
+			res = insert(key, value, parent.right)
 		} else {
 			parent.right = newNode(key, value, parent)
-			return parent.right
+			res = parent.right
 		}
 	} else {
 		if parent.left != nil {
-			return insert(key, value, parent.left)
+			res = insert(key, value, parent.left)
 		} else {
 			parent.left = newNode(key, value, parent)
-			return parent.left
+			res = parent.left
 		}
 	}
+
+	return res
 }
 
 func insertTree(parent *node, child *node) {
@@ -52,41 +56,13 @@ func balance(a *node, tree *AVL) {
 	b := safeGetRelative(a, right)
 
 	if safeGetNodeHeight(b)-safeGetNodeHeight(l) == 2 {
-		c := safeGetRelative(b, left)
-		r := safeGetRelative(b, right)
+		leftRotate(a, b)
+	} else {
+		b = safeGetRelative(a, left)
+		r := safeGetRelative(a, right)
 
-		// Малое левое вращение
-		if safeGetNodeHeight(c) <= safeGetNodeHeight(r) {
-			smallLeftRotate(a, b, c)
-			a = b
-		} else if safeGetNodeHeight(c) > safeGetNodeHeight(r) {
-			// Большое левое вращение
-			m := safeGetRelative(c, right)
-			smallRightRotate(b, c, m)
-			n := safeGetRelative(c, left)
-			smallLeftRotate(a, c, n)
-			a = c
-		}
-	}
-
-	b = safeGetRelative(a, left)
-	r := safeGetRelative(a, right)
-
-	if safeGetNodeHeight(b)-safeGetNodeHeight(r) == 2 {
-		l := safeGetRelative(b, left)
-		c := safeGetRelative(b, right)
-
-		if safeGetNodeHeight(c) <= safeGetNodeHeight(l) {
-			// Малое правое вращение
-			smallRightRotate(a, b, c)
-			a = b
-		} else {
-			// Большое правое вращение
-			m := safeGetRelative(c, left)
-			smallLeftRotate(b, c, m)
-			n := safeGetRelative(c, right)
-			smallRightRotate(a, c, n)
-			a = c
+		if safeGetNodeHeight(b)-safeGetNodeHeight(r) == 2 {
+			rightRotate(a, b)
 		}
 	}
 
@@ -98,50 +74,39 @@ func balance(a *node, tree *AVL) {
 
 }
 
-func balance2(a *node, tree *AVL) {
-	updateHeight(a)
+func leftRotate(a, b *node) {
+	c := safeGetRelative(b, left)
+	r := safeGetRelative(b, right)
 
-	b := safeGetRelative(a, left)
-	r := safeGetRelative(a, right)
+	// Малое левое вращение
+	if safeGetNodeHeight(c) <= safeGetNodeHeight(r) {
+		smallLeftRotate(a, b, c)
+		a = b
+	} else if safeGetNodeHeight(c) > safeGetNodeHeight(r) {
+		// Большое левое вращение
+		m := safeGetRelative(c, right)
+		smallRightRotate(b, c, m)
+		n := safeGetRelative(c, left)
+		smallLeftRotate(a, c, n)
+		a = c
+	}
+}
+
+func rightRotate(a, b *node) {
 	l := safeGetRelative(b, left)
 	c := safeGetRelative(b, right)
 
-	heightDifference := safeGetNodeHeight(b) - safeGetNodeHeight(r)
-
-	if heightDifference == 2 {
+	if safeGetNodeHeight(c) <= safeGetNodeHeight(l) {
 		// Малое правое вращение
-		if safeGetNodeHeight(c) <= safeGetNodeHeight(l) {
-			smallRightRotate(a, b, c)
-			a = b
-		} else if safeGetNodeHeight(c) > safeGetNodeHeight(l) {
-			// Большое правое вращение
-			m := safeGetRelative(c, left)
-			smallLeftRotate(b, c, m)
-			n := safeGetRelative(c, right)
-			smallRightRotate(a, c, n)
-			a = c
-		}
-	}
-
-	if heightDifference == -2 {
-		// Малое левое вращение
-		if safeGetNodeHeight(c) <= safeGetNodeHeight(l) {
-			m := safeGetRelative(r, left)
-			smallLeftRotate(a, r, m)
-			a = r
-		} else if safeGetNodeHeight(c) > safeGetNodeHeight(l) {
-			// Большое левое вращение
-			n := safeGetRelative(c, right)
-			smallRightRotate(r, c, n)
-			m := safeGetRelative(c, left)
-			smallLeftRotate(a, c, m)
-		}
-	}
-
-	if a.parent == nil {
-		tree.root = a
+		smallRightRotate(a, b, c)
+		a = b
 	} else {
-		balance(a.parent, tree)
+		// Большое правое вращение
+		m := safeGetRelative(c, left)
+		smallLeftRotate(b, c, m)
+		n := safeGetRelative(c, right)
+		smallRightRotate(a, c, n)
+		a = c
 	}
 }
 

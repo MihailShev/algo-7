@@ -70,24 +70,6 @@ func (t *Tree) String() string {
 	return treeToString(t.root, false)
 }
 
-//func (t *Tree) insert(key int, value interface{}, n *node) {
-//	if key == n.key {
-//		n.value = value
-//	} else if key > n.key {
-//		if n.right != nil {
-//			t.insert(key, value, n.right)
-//		} else {
-//			n.right = t.newNode(key, value, n)
-//		}
-//	} else {
-//		if n.left != nil {
-//			t.insert(key, value, n.left)
-//		} else {
-//			n.left = t.newNode(key, value, n)
-//		}
-//	}
-//}
-
 func (t *Tree) newNode(key int, value interface{}, parent *node) *node {
 	n := newNode(key, value, parent)
 

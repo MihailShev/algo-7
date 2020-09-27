@@ -8,21 +8,27 @@ import (
 )
 
 //var keys = []int{50, 17, 76, 9, 23, 14, 12, 19, 54, 72, 67}
-var keys = []int{50, 40, 30, 20, 10, 35, 65, 70, 45, 43, 40}
+var keys = []int{50, 40, 30, 20, 10, 35, 65, 70, 25}
 
 func main() {
 	tree := binaryTree.AVL{}
 
-	//keys := genUniqRandom(1, 50)
+	//keys := genUniqRandom(1, 5000_000)
 
+	start := time.Now()
 	for _, v := range keys {
 		tree.Insert(v, v)
+		fmt.Println("size", tree.Size())
 		fmt.Println(tree.String())
-
-		fmt.Printf("\n=================\n")
 	}
+	stop := time.Since(start)
 
+	tree.Remove(40)
+	tree.Remove(65)
+	fmt.Println("after removed")
+	fmt.Println("size", tree.Size())
 	fmt.Println(tree.String())
+	fmt.Println("Execution time", stop)
 
 	//for _, v := range keys {
 	//	value := tree.Search(v)
