@@ -9,6 +9,11 @@ func (t *Tree) Size() int {
 	return t.size
 }
 
+func (t *Tree) Clear() {
+	t.root = nil
+	t.size = 0
+}
+
 func (t *Tree) Search(key int) interface{} {
 	n := search(key, t.root)
 
@@ -22,7 +27,7 @@ func (t *Tree) Search(key int) interface{} {
 func (t *Tree) Insert(key int, value interface{}) {
 	t.size++
 	if t.root == nil {
-		t.root = t.newNode(key, value, nil)
+		t.root = newNode(key, value, nil)
 	} else {
 		insert(key, value, t.root)
 	}

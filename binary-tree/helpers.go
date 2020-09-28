@@ -1,30 +1,38 @@
 package binary_tree
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 )
 
-func treeToString(root *node, showHeight bool) string {
-	if root == nil {
+const (
+	root   = "root"
+	parent = "parent"
+	left   = "left"
+	right  = "right"
+)
+
+func treeToString(n *node, showHeight bool) string {
+	if n == nil {
 		return "Tree is empty"
 	}
 	arr := make([]*node, 0)
-	nodeToArray(root, &arr)
+	nodeToArray(n, &arr)
 
-	root.updateDeep()
+	n.updateDeep()
 	sort.Sort(NodesByDeep(arr))
 
 	s := &strings.Builder{}
 
 	for _, v := range arr {
-		t := "root"
+		t := root
 		if v.parent != nil {
 
 			if v.key < v.parent.key {
-				t = "left"
+				t = left
 			} else {
-				t = "right"
+				t = right
 			}
 		}
 		s.WriteString(v.String(t, showHeight))
@@ -34,27 +42,22 @@ func treeToString(root *node, showHeight bool) string {
 	return s.String()
 }
 
-func search(key int, n *node) *node {
+func nodeToString(n *node, t string, showHeight bool) string {
+	s := strings.Builder{}
 
-	if n == nil {
-		return nil
+	s.WriteString(fmt.Sprintf("deep %d\t ", n.deep))
+
+	if showHeight {
+		s.WriteString(fmt.Sprintf("height %d\t ", n.height))
 	}
 
-	if key == n.key {
-		return n
-	}
+	s.WriteString(fmt.Sprintf("%s \t%d \t", t, n.key))
 
-	if key > n.key {
-		return search(key, n.right)
+	if n.parent != nil {
+		s.WriteString(fmt.Sprintf("parent: %d ", n.parent.key))
 	} else {
-		return search(key, n.left)
-	}
-}
-
-func safeGetNodeHeight(n *node) int {
-	if n != nil {
-		return n.height
+		s.WriteString("null    ")
 	}
 
-	return 0
+	return s.String()
 }
