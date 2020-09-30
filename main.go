@@ -116,6 +116,9 @@ func main() {
 		}
 	})
 
+	fmt.Println("Finish, press any key")
+	_, _ = fmt.Scanf(" ")
+
 }
 
 func test(run func()) {
